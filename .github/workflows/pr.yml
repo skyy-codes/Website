@@ -1,0 +1,38 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+
+  # Stylelint + Prettier
+
+  Checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies
+        run: bun install >> install.txt 2>&1
+
+      - name: Run Linting + Formating checks
+        run: bun run lint:css >> checks.txt 2>&1
+
+      - name: Upload checks log
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Checks
+          path: checks.txt
+
+      - name: Upload install log
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Install Log
+          path: install.txt
